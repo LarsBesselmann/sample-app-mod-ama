@@ -61,6 +61,9 @@ public class WeatherServlet extends HttpServlet {
 
   @Override
   public void init() {
+    String serverName=configureEnvDiscovery();
+    logger.log(Level.FINEST, "serverName: " + serverName);
+
     server = ManagementFactory.getPlatformMBeanServer();
     try {
       weatherON = new ObjectName("com.acme.modres.mbean:name=appInfo");
@@ -120,10 +123,29 @@ public class WeatherServlet extends HttpServlet {
     }
   }
 
+
+  // try to get weatherservice URL from WAS JNDI settings
+  String setWeatherAPI(){
+    String urlString = null;
+      try { 
+        Object jndiConstant = new InitialContext().lookup("url/WeatherAPI");
+        urlString = (String) jndiConstant;
+      } catch (NamingException e) { e.printStackTrace(); } 
+      return urlString;
+  }
+
+
   private void getRealTimeWeatherData(String city, String apiKey, HttpServletResponse response)
       throws ServletException, IOException {
     String resturl = null;
     String resturlbase = Constants.WUNDERGROUND_API_PREFIX + apiKey + Constants.WUNDERGROUND_API_PART;
+
+    String weatherAPIURL=setWeatherAPI();
+    if (weatherAPIURL != null) {
+        resturlbase=weatherAPIURL;
+    }
+    logger.info("weatherURL: " + resturlbase);
+
 
     if (Constants.PARIS.equals(city)) {
       resturl = resturlbase + "France/Paris.json";
@@ -204,7 +226,7 @@ public class WeatherServlet extends HttpServlet {
   private void getDefaultWeatherData(String city, HttpServletResponse response)
       throws ServletException, IOException {
     DefaultWeatherData defaultWeatherData = null;
-
+    
     try {
       defaultWeatherData = new DefaultWeatherData(city);
     } catch (UnsupportedOperationException e) {

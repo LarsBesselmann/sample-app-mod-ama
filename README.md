@@ -75,9 +75,8 @@ There are no special instructions for deploying the application to IBM WebSphere
 It can be deployed using the UI console or using `wsadmin`.
 See the [documentation](https://www.ibm.com/docs/en/was-nd/9.0.5?topic=applications-how-do-i-deploy) for more details on deploying the application to WebSphere Application Server.
 
-If you want to configure the weather API URL in traditional WAS, you can use a wsadmin command like this:
-AdminConfig.create('URL', AdminConfig.getid('/Cell:Default01Cell/Node:AppSrv01Node1/Server:server1/URLProvider:Default URL Provider/'), '[[spec "http://api.wunderground.com/api"] [name "WeatherAPI"] [description "Weather API used by modresorts application"] [category "modresorts"] [jndiName "jndi/WeatherAPI"]]') 
-AdminConfig.save()
+If you want to configure the weather API URL in traditional WAS, you can use a wsadmin script setURLProvider.py. To install the application to server1, use the script modresorts_install.py.
+
 
 ## Deploying the Application to Liberty
 To deploy the application on Liberty you can do one of the following:
